@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from flask import Blueprint, request
 from flask_login import login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 
 from app import db, socketio
 from app.models.task import Priority, Status, Task
@@ -65,11 +66,16 @@ def get_tasks():
 
     if status_filter:
         query = query.filter_by(status=status_filter)
+    else:
+        query = query.filter(Task.status != Status.CANCELLED)
     if priority_filter:
         query = query.filter_by(priority=priority_filter)
     if search:
         query = query.filter(
-            Task.title.ilike(f"%{search}%") | Task.description.ilike(f"%{search}%")
+            or_(
+                Task.title.ilike(f"%{search}%"),
+                Task.description.ilike(f"%{search}%"),
+            )
         )
 
     tasks = query.order_by(Task.created_at.desc()).all()

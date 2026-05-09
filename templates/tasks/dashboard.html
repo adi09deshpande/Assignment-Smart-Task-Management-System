@@ -49,6 +49,13 @@
         <span class="ws-dot"></span>
         <span class="ws-label">Live</span>
       </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span class="theme-toggle__track">
+          <span class="theme-toggle__icon theme-toggle__icon--sun"></span>
+          <span class="theme-toggle__icon theme-toggle__icon--moon"></span>
+          <span class="theme-toggle__thumb" id="themeToggleThumb"></span>
+        </span>
+      </button>
       <button class="btn btn--primary" id="newTaskBtn">+ New Task</button>
     </div>
   </header>
@@ -69,6 +76,10 @@
     <div class="stat-card stat-card--progress" data-type="in_progress">
       <span class="stat-card__value" id="statInProgress">-</span>
       <span class="stat-card__label">In Progress</span>
+    </div>
+    <div class="stat-card stat-card--cancelled" data-type="cancelled">
+      <span class="stat-card__value" id="statCancelled">-</span>
+      <span class="stat-card__label">Cancelled</span>
     </div>
     <div class="stat-card stat-card--pct">
       <span class="stat-card__value" id="statPct">-%</span>

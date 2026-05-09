@@ -52,6 +52,7 @@ smart-task-manager/
 |-- requirements.txt
 |-- run.py
 |-- run_windows.ps1
+|-- schema.sql
 `-- setup_windows.ps1
 ```
 
@@ -244,6 +245,26 @@ HOST=127.0.0.1
 PORT=5000
 DATABASE_URL=postgresql://postgres:your_postgres_password@localhost:5432/task_manager_db
 SOCKETIO_ASYNC_MODE=threading
+```
+
+## Database Schema
+
+This project includes a PostgreSQL schema file for assignment submission:
+
+```text
+schema.sql
+```
+
+You can create your tables with:
+
+```powershell
+psql -U postgres -d task_manager_db -f schema.sql
+```
+
+Or you can continue using:
+
+```powershell
+python init_db.py
 ```
 
 ## Running the App Later

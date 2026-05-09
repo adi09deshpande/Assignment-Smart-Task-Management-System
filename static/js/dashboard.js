@@ -11,6 +11,7 @@ const State = {
 };
 
 const TASK_STATUSES = ['pending', 'in_progress', 'completed', 'cancelled'];
+const THEME_STORAGE_KEY = 'taskflow-theme';
 
 async function apiFetch(path, options = {}) {
   const defaults = {
@@ -35,6 +36,28 @@ async function apiFetch(path, options = {}) {
 }
 
 let socket;
+
+function applyTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('theme-light', isLight);
+
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.setAttribute('aria-label', isLight ? 'Switch to dark theme' : 'Switch to light theme');
+    toggle.title = isLight ? 'Switch to dark theme' : 'Switch to light theme';
+  }
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
+  applyTheme(savedTheme);
+
+  document.getElementById('themeToggle')?.addEventListener('click', () => {
+    const nextTheme = document.body.classList.contains('theme-light') ? 'dark' : 'light';
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+  });
+}
 
 function upsertTask(task, { prepend = false } = {}) {
   const idx = State.tasks.findIndex(t => t.id === task.id);
@@ -153,6 +176,7 @@ function renderAnalytics(a) {
   document.getElementById('statCompleted').textContent = a.completed_tasks;
   document.getElementById('statPending').textContent = a.pending_tasks;
   document.getElementById('statInProgress').textContent = a.in_progress_tasks;
+  document.getElementById('statCancelled').textContent = a.cancelled_tasks;
   document.getElementById('statPct').textContent = `${a.completion_percentage}%`;
   document.getElementById('progressFill').style.width = `${a.completion_percentage}%`;
 }
@@ -505,6 +529,7 @@ function wireEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   wireEvents();
   initSocket();
   loadTasks();
