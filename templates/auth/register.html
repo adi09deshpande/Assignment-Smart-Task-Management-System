@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Create Account - TaskFlow{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+  <div class="auth-brand">
+    <div class="brand-icon">*</div>
+    <h1 class="brand-name">TaskFlow</h1>
+    <p class="brand-tagline">Intelligent task management</p>
+  </div>
+
+  <div class="auth-card">
+    <h2 class="auth-title">Create account</h2>
+    <p class="auth-subtitle">Start managing tasks intelligently</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert--{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form" data-register-form>
+      <div class="field">
+        <label class="field__label" for="username">Username</label>
+        <input class="field__input" type="text" id="username" name="username"
+               placeholder="johndoe" required minlength="3" autocomplete="username"
+               value="{{ request.form.get('username', '') }}" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="email">Email</label>
+        <input class="field__input" type="email" id="email" name="email"
+               placeholder="john@example.com" required autocomplete="email"
+               value="{{ request.form.get('email', '') }}" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <input class="field__input" type="password" id="password" name="password"
+               placeholder="Min 8 chars, 1 uppercase, 1 number" required autocomplete="new-password" />
+        <div class="field-hint" id="passwordHelp">
+          Use at least 8 characters, including 1 uppercase letter and 1 number.
+        </div>
+        <div class="field-error hidden" id="passwordError" aria-live="polite"></div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="confirm_password">Confirm Password</label>
+        <input class="field__input" type="password" id="confirm_password" name="confirm_password"
+               placeholder="Re-enter your password" required autocomplete="new-password" />
+        <div class="field-error hidden" id="confirmPasswordError" aria-live="polite"></div>
+      </div>
+      <button type="submit" class="btn btn--primary btn--full">Create Account</button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a href="{{ url_for('auth.login') }}" class="auth-link">Sign in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

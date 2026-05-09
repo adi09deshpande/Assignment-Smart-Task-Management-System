@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Sign In - TaskFlow{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+  <div class="auth-brand">
+    <div class="brand-icon">*</div>
+    <h1 class="brand-name">TaskFlow</h1>
+    <p class="brand-tagline">Intelligent task management</p>
+  </div>
+
+  <div class="auth-card">
+    <h2 class="auth-title">Welcome back</h2>
+    <p class="auth-subtitle">Sign in to your workspace</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert--{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form" data-login-form>
+      <div class="field">
+        <label class="field__label" for="identifier">Username or Email</label>
+        <input class="field__input" type="text" id="identifier" name="identifier"
+               placeholder="your@email.com" required autocomplete="username"
+               value="{{ request.form.get('identifier', '') }}" />
+        <div class="field-error hidden" id="identifierError" aria-live="polite"></div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <input class="field__input" type="password" id="password" name="password"
+               placeholder="Enter your password" required autocomplete="current-password" />
+        <div class="field-error hidden" id="loginPasswordError" aria-live="polite"></div>
+      </div>
+      <div class="field field--checkbox">
+        <input type="checkbox" id="remember" name="remember"
+               {% if request.form.get('remember') == 'on' %}checked{% endif %} />
+        <label for="remember">Keep me signed in</label>
+      </div>
+      <button type="submit" class="btn btn--primary btn--full">Sign In</button>
+    </form>
+
+    <p class="auth-footer">
+      Don't have an account?
+      <a href="{{ url_for('auth.register') }}" class="auth-link">Create one</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

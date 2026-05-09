@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - TaskFlow{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block body %}
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__brand">
+    <span class="brand-icon">*</span>
+    <span class="brand-name">TaskFlow</span>
+  </div>
+  <nav class="sidebar__nav">
+    <a href="#" class="nav-item nav-item--active" data-filter="all">
+      <span class="nav-item__icon">[]</span> All Tasks
+    </a>
+    <a href="#" class="nav-item" data-filter="pending">
+      <span class="nav-item__icon">O</span> Pending
+    </a>
+    <a href="#" class="nav-item" data-filter="in_progress">
+      <span class="nav-item__icon">-</span> In Progress
+    </a>
+    <a href="#" class="nav-item" data-filter="completed">
+      <span class="nav-item__icon">+</span> Completed
+    </a>
+    <a href="#" class="nav-item" data-filter="cancelled">
+      <span class="nav-item__icon">x</span> Cancelled
+    </a>
+  </nav>
+  <div class="sidebar__footer">
+    <div class="user-info">
+      <div class="user-avatar">{{ user.username[0].upper() }}</div>
+      <div class="user-details">
+        <span class="user-name">{{ user.username }}</span>
+        <span class="user-email">{{ user.email }}</span>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout" title="Logout">Exit</a>
+  </div>
+</aside>
+
+<main class="main-content">
+  <header class="topbar">
+    <button class="sidebar-toggle" id="sidebarToggle">Menu</button>
+    <div class="topbar__search">
+      <span class="search-icon">/</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search tasks..." />
+    </div>
+    <div class="topbar__actions">
+      <div class="ws-indicator" id="wsIndicator" title="WebSocket status">
+        <span class="ws-dot"></span>
+        <span class="ws-label">Live</span>
+      </div>
+      <button class="btn btn--primary" id="newTaskBtn">+ New Task</button>
+    </div>
+  </header>
+
+  <section class="analytics-strip" id="analyticsStrip">
+    <div class="stat-card" data-type="total">
+      <span class="stat-card__value" id="statTotal">-</span>
+      <span class="stat-card__label">Total Tasks</span>
+    </div>
+    <div class="stat-card stat-card--completed" data-type="completed">
+      <span class="stat-card__value" id="statCompleted">-</span>
+      <span class="stat-card__label">Completed</span>
+    </div>
+    <div class="stat-card stat-card--pending" data-type="pending">
+      <span class="stat-card__value" id="statPending">-</span>
+      <span class="stat-card__label">Pending</span>
+    </div>
+    <div class="stat-card stat-card--progress" data-type="in_progress">
+      <span class="stat-card__value" id="statInProgress">-</span>
+      <span class="stat-card__label">In Progress</span>
+    </div>
+    <div class="stat-card stat-card--pct">
+      <span class="stat-card__value" id="statPct">-%</span>
+      <span class="stat-card__label">Completion Rate</span>
+      <div class="progress-bar">
+        <div class="progress-bar__fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="task-section">
+    <div class="task-section__header">
+      <h2 class="section-title" id="sectionTitle">All Tasks</h2>
+      <div class="filter-bar">
+        <select class="filter-select" id="priorityFilter">
+          <option value="">All Priorities</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <div class="sort-btns">
+          <button class="sort-btn active" data-sort="created_at">Newest</button>
+          <button class="sort-btn" data-sort="priority">Priority</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-list" id="taskList">
+      <div class="task-list__empty hidden" id="emptyState">
+        <div class="empty-icon">*</div>
+        <p>No tasks yet. Create your first one.</p>
+      </div>
+      <div class="task-skeleton" id="taskSkeleton">
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal__header">
+      <h3 class="modal__title" id="modalTitle">New Task</h3>
+      <button class="modal__close" id="closeModal">Close</button>
+    </div>
+    <div class="modal__body">
+      <div class="field">
+        <label class="field__label" for="taskTitle">Title <span class="required">*</span></label>
+        <input class="field__input" type="text" id="taskTitle" placeholder="What needs to be done?" maxlength="200" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="taskDesc">Description</label>
+        <textarea class="field__input field__textarea" id="taskDesc" placeholder="Add details..." rows="3"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field__label" for="taskPriority">Priority</label>
+          <select class="field__input" id="taskPriority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="taskDue">Due Date (optional)</label>
+        <input class="field__input" type="datetime-local" id="taskDue" />
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" id="cancelModal">Cancel</button>
+      <button class="btn btn--primary" id="saveTask">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <h3 class="modal__title">Delete Task</h3>
+      <button class="modal__close" id="closeDeleteModal">Close</button>
+    </div>
+    <div class="modal__body">
+      <p>Are you sure you want to delete <strong id="deleteTaskName"></strong>? This action cannot be undone.</p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" id="cancelDelete">Cancel</button>
+      <button class="btn btn--danger" id="confirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
